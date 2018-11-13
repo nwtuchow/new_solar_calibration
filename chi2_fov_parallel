@@ -1,0 +1,7 @@
+#!/bin/bash
+
+python f_ov_parallel.py 0 10 &
+python f_ov_parallel.py 10 20 &
+python f_ov_parallel.py 20 30 &
+python f_ov_parallel.py 30 40 &
+python f_ov_parallel.py 40 50

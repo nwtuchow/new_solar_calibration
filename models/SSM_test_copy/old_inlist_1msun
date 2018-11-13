@@ -1,0 +1,193 @@
+! inlist to evolve a 1.0 solar mass star
+!first just use GS98 opacities
+!appears to be spending most of its time in premain sequence
+
+&star_job
+
+show_log_description_at_start = .false. 
+
+profile_columns_file = '../profile_columns.list' 
+history_columns_file = '../history_columns.list' 
+! begin with a pre-main sequence model
+create_pre_main_sequence_model = .false.
+
+! save a model at the end of the run
+load_saved_model = .true. 
+saved_model_name = 'solar_calibration_input.mod' 
+
+save_model_when_terminate = .false. 
+save_model_filename = '1Msun.mod' 
+
+change_initial_net = .true. ! switch nuclear reaction network
+new_net_name = 'pp_and_cno_extras.net' 
+
+set_rate_c12ag = 'Kunz' 
+set_rate_n14pg = 'jina reaclib' 
+
+
+kappa_file_prefix = 'OP_gs98' !use old kappa
+kappa_lowT_prefix = 'lowT_fa05_gs98' ! for lower temperatures.
+
+
+set_uniform_initial_composition = .true. 
+
+initial_h1 = 0.7006737164124507 !X
+initial_h2 = 0 !0
+initial_he3 = 2.7910526985061124d-05 !Y_frac_he3*Y
+initial_he4 = 0.27907735932362615 !Y - s% job% initial_he3
+initial_zfracs = 3 !GS98
+
+write_profile_when_terminate = .true. 
+filename_for_profile_when_terminate = '/home/nxt5109/Dropbox/Faint_Young_Sun_Abundances/MESA_modeling/LOGS/finalProfile_SSM.data' 
+
+save_photo_when_terminate = .false. 
+
+change_lnPgas_flag = .true. 
+new_lnPgas_flag = .false. 
+
+set_initial_model_number = .true. 
+initial_model_number = 0 
+
+! display on-screen plots
+pgstar_flag = .false. 
+
+/ !end of star_job namelist
+
+
+&controls
+
+use_gold_tolerances = .true. 
+use_eosDT2 = .false. ! the test results were calibrated without DT2 or ELM
+use_eosELM = .false. 
+
+! starting specifications
+!initial_mass = 1.000 ! in Msun units
+!initial_y = 0.28 !from simplex_search
+!initial_z = 0.020221013736938076
+
+max_age = 4.61d9 
+!      num_adjusted_dt_steps_before_max_age = 200
+!      dt_years_for_steps_before_max_age = 1d6
+
+max_years_for_timestep = 1d7 
+varcontrol_target = 1d-3 
+max_timestep_factor = 2d0 
+delta_lgT_cntr_limit = 0.1 
+delta_lgRho_cntr_limit = 0.5 
+
+mixing_length_alpha = 1.9033976646700377 
+
+!overshoot info, many set to f_ov or f0_ov_div_f_ov*f_ov
+!all the following set to f_ov
+overshoot_f_above_nonburn_core = 0.01847366484995607 !f_ov
+overshoot_f_above_nonburn_shell = 0.01847366484995607 !f_ov
+overshoot_f_below_nonburn_shell = 0.01847366484995607 !f_ov
+
+overshoot_f_above_burn_h_core = 0.01847366484995607 
+overshoot_f_above_burn_h_shell = 0.01847366484995607 
+overshoot_f_below_burn_h_shell = 0.01847366484995607 
+
+overshoot_f_above_burn_he_core = 0.01847366484995607 
+overshoot_f_above_burn_he_shell = 0.01847366484995607 
+overshoot_f_below_burn_he_shell = 0.01847366484995607 
+
+overshoot_f_above_burn_z_core = 0.01847366484995607 
+overshoot_f_above_burn_z_shell = 0.01847366484995607 
+overshoot_f_below_burn_z_shell = 0.01847366484995607 
+
+!all the following set to f0_ov_div_f_ov*f_ov
+overshoot_f0_above_nonburn_core = 0.01847366484995607 
+overshoot_f0_above_nonburn_shell = 0.01847366484995607 
+overshoot_f0_below_nonburn_shell = 0.01847366484995607 
+
+
+overshoot_f0_above_burn_h_core = 0.01847366484995607 
+overshoot_f0_above_burn_h_shell = 0.01847366484995607 
+overshoot_f0_below_burn_h_shell = 0.01847366484995607 
+
+overshoot_f0_above_burn_he_core = 0.01847366484995607 
+overshoot_f0_above_burn_he_shell = 0.01847366484995607 
+overshoot_f0_below_burn_he_shell = 0.01847366484995607 
+
+overshoot_f0_above_burn_z_core = 0.01847366484995607 
+overshoot_f0_above_burn_z_shell = 0.01847366484995607 
+overshoot_f0_below_burn_z_shell = 0.01847366484995607 
+
+
+! controls for output
+
+photo_interval = 1000 
+
+log_directory = '/home/nxt5109/Dropbox/Faint_Young_Sun_Abundances/MESA_modeling/LOGS' 
+do_history_file = .true. 
+star_history_name = 'historySSM.data' 
+history_interval = 10 
+
+
+write_profiles_flag = .false. 
+profile_interval = 100 
+
+terminal_interval = 10000 
+write_header_frequency = 10000 
+
+! atmosphere
+which_atm_option = 'photosphere_tables' 
+
+! atomic diffusion
+do_element_diffusion = .true. ! determines whether or not we do diffusion
+diffusion_dt_limit = 7d11 ! no element diffusion if dt < this limit (in seconds)
+diffusion_T_full_on = 1d3 
+diffusion_T_full_off = 1d3 
+
+diffusion_calculates_ionization = .true. 
+
+diffusion_num_classes = 4 ! number of classes of species for diffusion calculations
+diffusion_class_representative(1) = 'h1' 
+diffusion_class_representative(2) = 'he4' 
+diffusion_class_representative(3) = 'o16' 
+diffusion_class_representative(4) = 'fe56' 
+
+! in ascending order.  species goes into 1st class with A_max >= species A
+diffusion_class_A_max(1) = 2 
+diffusion_class_A_max(2) = 4 
+diffusion_class_A_max(3) = 16 
+diffusion_class_A_max(4) = 10000 
+
+diffusion_use_isolve = .true. 
+diffusion_rtol_for_isolve = 1d-4 
+diffusion_atol_for_isolve = 1d-5 
+diffusion_maxsteps_for_isolve = 1000 
+diffusion_isolve_solver = 'ros2_solver' 
+
+! mesh adjustment
+mesh_delta_coeff = 2.0 
+
+P_function_weight = 25 
+T_function1_weight = 75 
+
+xtra_coef_czb_full_on = 1 
+xtra_coef_czb_full_off = 1 
+!xtra_coef_czb_full_on_if_center_he4_below_this = 1
+!xtra_coef_czb_full_off_if_center_he4_above_this = 1
+
+xtra_coef_a_l_nb_czb = 0.15 ! above lower nonburn convective boundary
+xtra_dist_a_l_nb_czb = 20 ! above lower nonburn convective boundary
+
+xtra_coef_b_l_nb_czb = 0.15 ! below lower nonburn convective boundary
+xtra_dist_b_l_nb_czb = 20 ! below lower nonburn convective boundary
+
+
+xa_function_species(1) = 'he4' ! name of nuclide as defined in chem_def
+xa_function_weight(1) = 130 
+xa_function_param(1) = 1d-2 
+
+xa_function_species(2) = 'he3' ! name of nuclide as defined in chem_def
+xa_function_weight(2) = 60 
+xa_function_param(2) = 1d-5 
+
+
+! stop when the center mass fraction of h1 drops below this limit
+!xa_central_lower_limit_species(1) = 'h1'
+!xa_central_lower_limit(1) = 1d-3
+
+/ ! end of controls namelist

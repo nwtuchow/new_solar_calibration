@@ -1,0 +1,16 @@
+
+&star_job
+
+! begin with a pre-main sequence model
+create_pre_main_sequence_model = .true. !this comment is here
+
+! save a model at the end of the run
+save_model_when_terminate = .true. 
+save_model_filename = 'dummy.mod' 
+
+! display on-screen plots
+pgstar_flag = .true. 
+
+/ !end of star_job namelist
+
+

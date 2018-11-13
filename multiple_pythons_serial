@@ -1,0 +1,6 @@
+#!/bin/bash
+
+#run multiple python sessions at once
+
+python single_mesa_run.py
+python single_mesa_run.py
