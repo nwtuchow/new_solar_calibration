@@ -30,12 +30,15 @@ num_cores=3
 
 ntest=50
 ni=len(ind_range)
-f_ov_arr= np.linspace(0.016, 0.021,ntest)
+f_ov_arr= np.linspace(0.016, 0.021,ntest) #min1
+#f_ov_arr=np.linspace(0.030,0.037,ntest) #min2
 in_dict={} #all fields must be same dimensions
 
 dict_keys=["f_ov","init_Y","init_FeH","alpha",]
 for key in dict_keys:
     in_dict[key]=np.empty(ni)
+
+labels=[]
 
 for i in range(0,ni):
     in_dict["f_ov"][i]= f_ov_arr[ind_range[i]]
@@ -43,8 +46,10 @@ for i in range(0,ni):
     in_dict["init_FeH"][i]=0.099883042891420248e0
     in_dict["alpha"][i]=1.9033976646700377e0
     
+    labels.append(str(f_ov_arr[ind_range[i]])+"_")
+
 out_data=mesa_wrapper(in_dict,num_cores=num_cores,log_dir=logdir,
-                      model_name="test_chi2.mod")
+                      model_name="test_chi2.mod",keepcs=False, labels=labels)
 
 savename="outputs/f_ov_min1_%d_%d.pkl" % (s_ind, e_ind)
 

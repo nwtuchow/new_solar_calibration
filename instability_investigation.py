@@ -29,6 +29,7 @@ e_ind=10
 
 num_files=5
 big_dict={}
+#should look into including file names for profiles and histories in dict
 
 for k in range(0,num_files):
     fname= "outputs/f_ov_min1_%d_%d.pkl" % (s_ind, e_ind)
@@ -58,47 +59,18 @@ ax.legend()
 #fig.savefig("plots/f_ov_min1_chi2.png")
 
 #f_ov_arr=big_dict["f_ov"]
-'''
-fig, ax =plt.subplots(1)
-ax.plot(f_ov,big_dict['chi2_tot'],'k-', label="total chi2", lw=2.5)
-ax.plot(f_ov,big_dict['chi2_Teff']/5, label="Teff", ls="dashed", lw=1.5)
-ax.plot(f_ov,big_dict['chi2_log_L']/5, label="log(L)",ls="dashed", lw=1.5)
-ax.plot(f_ov,big_dict['chi2_surface_He']/5, label="surface He",ls="dashed", lw=1.5)
-ax.plot(f_ov,big_dict['chi2_Rcz']/5, label="R_cz",ls="dashed", lw=1.5)
-ax.plot(f_ov,big_dict['chi2_cs_rms']/5, label="cs rms",ls="dashed", lw=1.5)
-ax.set_xlabel(r"$f_{ov}$")
-ax.set_ylabel(r"$\chi ^2 _{\nu}$")
-ax.set_ylim([0.0,14.0])
-ax.legend()
-fig.savefig("plots/f_ov_chi2_components.png")
 
-from solar_chi2 import set_targets
+fig2, ax2= plt.subplots(1)
+ax2.plot(big_dict['surface_Z_div_X'],big_dict['chi2_tot'])
+ax2.set_xlabel("surface Z/X")
+ax2.set_ylabel("reduced chi2")
 
-targets_set=set_targets()
+fig3, ax3= plt.subplots(1)
+ax3.scatter(big_dict['log_g'],big_dict['chi2_tot'])
+ax3.set_xlabel("log(g)")
+ax3.set_ylabel("reduced chi2")
 
-fig2, ax2 =plt.subplots(1)
-
-target_T_line=Teff_target*np.ones(40)
-ax2.plot(f_ov,target_T_line, 'k--',)
-ax2.plot(f_ov,big_dict["Teff"])
-ax2.set_xlabel(r"$f_{ov}$")
-ax2.set_ylabel("T_eff (K)")
-fig2.savefig("plots/f_ov_vs_T.png")
-
-target_logL_line=logL_target*np.ones(40)
-fig3, ax3 =plt.subplots(1)
-ax3.plot(f_ov,target_logL_line, 'k--',)
-ax3.plot(f_ov,big_dict["log_L"])
-ax3.set_xlabel(r"$f_{ov}$")
-ax3.set_ylabel("log(L)")
-fig3.savefig("plots/f_ov_vs_logL.png")
-
-target_cs_rms_line=solar_cs_rms_target*np.ones(40)
-fig4, ax4 =plt.subplots(1)
-ax4.plot(f_ov,target_cs_rms_line, 'k--',)
-ax4.plot(f_ov,big_dict["cs_rms"])
-ax4.set_xlabel(r"$f_{ov}$")
-ax4.set_ylabel("c_s rms")
-fig4.savefig("plots/f_ov_vs_cs_rms.png")
-'''
-
+fig4, ax4= plt.subplots(1)
+ax4.scatter(big_dict['log_R'],big_dict['chi2_tot'])
+ax4.set_xlabel("log(R)")
+ax4.set_ylabel("reduced chi2")

@@ -18,33 +18,46 @@ import numpy as np
 
 #version with dict output
 #keys are keys for chi2 dict
-#need to modify to specify model file, which stage of evolution
-def serial_run_mesa_dict(inlist_vec,workdir,sound_data, ind_range=[],label='',
+#need to modify to specify which stage of evolution
+#ind_range should be depreciated
+def serial_run_mesa_dict(inlist_vec,workdir,sound_data, ind_range=[],labels='',
                     model_name="initial_sun.mod", OMP_NUM_THREADS=16,made=False,
                     keys=["Teff", "log_L","surface_He","Rcz","cs_rms"],initialize=False,
-                    log_dir=''):
+                    log_dir='',keepcs=False):
     if ind_range ==[]:
         n_in=len(inlist_vec)
         ind_range = range(0,n_in)
     else:
         n_in = len(ind_range)
     
-    #out_keys=['Teff','log_R', 'log_g', 'log_L', 'FeH', 'age', 'surface_Z_div_X',
-    #           'surface_He','Rcz', 'cs_rms']
+    out_keys=['Teff','log_R', 'log_g', 'log_L', 'FeH', 'age', 'surface_Z_div_X',
+               'surface_He','Rcz', 'cs_rms']
     
     data_dict={}
+    #allocate chisq component arrays
     for s1 in keys:
-        data_dict[s1]=np.empty(n_in)
         s1_chi2="chi2_" +s1
         data_dict[s1_chi2]=np.empty(n_in)
+    #allocate output array in dict
+    for s2 in out_keys:
+        data_dict[s2]=np.empty(n_in)
     
     data_dict["chi2_tot"]=np.empty(n_in)
+    if keepcs:
+        data_dict["cs"]= []
+        data_dict["r"]=[]
+        data_dict["dq"]=[]
     
     if log_dir=='':
         log_dir= workdir+"/LOGS"
     
     j=0
     for i in ind_range:
+        if type(labels)==list:
+            label=labels[i]
+        else:
+            label=labels
+            
         prof_name=log_dir + "/"+label+"Profile_%d.data" % i
         hist_name=label+"history_%d.data" % i
         
@@ -67,19 +80,26 @@ def serial_run_mesa_dict(inlist_vec,workdir,sound_data, ind_range=[],label='',
         out_dict=output_convert(profile,hist,sound_data)
         chi2_dict= tot_chi_squared_dict(out_dict)
         for k1 in keys:
-            data_dict[k1][j]=out_dict[k1]
             chi2_k1="chi2_"+k1
             data_dict[chi2_k1][j]= chi2_dict[k1]
             
+        for k2 in out_keys:
+            data_dict[k2][j]=out_dict[k2]
+            
         data_dict["chi2_tot"][j]=chi2_dict["tot"]
+        if keepcs:
+            data_dict["cs"].append(profile.csound)
+            data_dict["r"].append(profile.radius)
+            data_dict["dq"].append(profile.dq)
         
         print("Index:",i, "\nChi2:",chi2_dict["tot"])
         j+=1
     return data_dict
 
 #needs to be tested
-def mesa_wrapper(in_dict,num_cores=16, cploc='',log_dir='', 
-                 initialize= False, model_name="initial_sun.mod"):
+def mesa_wrapper(in_dict,num_cores=16, cploc='',log_dir='', labels='',
+                 initialize= False, model_name="initial_sun.mod",keepcs=False,
+                 keys=["Teff", "log_L","surface_He","Rcz","cs_rms"]):
     ismade=False
     pcurrent = psutil.Process()
     cpid=pcurrent.pid
@@ -118,7 +138,7 @@ def mesa_wrapper(in_dict,num_cores=16, cploc='',log_dir='',
     #call serial mesa
     data_dict=serial_run_mesa_dict(inlist_vec,workdir,sound_data,model_name=model_name,
                          OMP_NUM_THREADS=num_cores,made=ismade,log_dir=log_dir, 
-                         initialize=initialize)
+                         initialize=initialize,keepcs=keepcs,labels=labels,keys=keys)
     
     #make sure none of in_dict keys are same as data_dict
     #if calling mesa_wrapper multiple times should deepcopy, not use update
